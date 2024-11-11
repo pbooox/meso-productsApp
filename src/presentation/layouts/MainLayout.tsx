@@ -1,7 +1,7 @@
 import { useNavigation } from "@react-navigation/native";
 import { Divider, Layout, TopNavigation, TopNavigationAction } from "@ui-kitten/components";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { MyIcon } from "../components/MyIcon";
+import { MyIcon } from "../components/ui/MyIcon";
 
 interface Props {
   title: string;
