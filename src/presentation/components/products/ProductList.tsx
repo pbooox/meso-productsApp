@@ -3,10 +3,11 @@ import { Product } from "../../../domain/entities/product"
 import { ProductCard } from "./ProductCard"
 
 interface Props {
-  products: Product[]
+  products: Product[];
+  fetchNextPage: () => void;
 }
 
-export const ProductList = ({ products }: Props) => {
+export const ProductList = ({ products, fetchNextPage }: Props) => {
 
   const renderItem = ({ item }: any): React.ReactElement => (
     <ProductCard product={item} />
@@ -18,8 +19,10 @@ export const ProductList = ({ products }: Props) => {
       numColumns={2}
       keyExtractor={(item, index) => `${item.id}-${index}`}
       renderItem={renderItem}
-
       ListFooterComponent={() => <Layout style={{ height: 150 }} />}
+      onEndReached={fetchNextPage}
+      onEndReachedThreshold={0.5}
+
     />
   )
 }
