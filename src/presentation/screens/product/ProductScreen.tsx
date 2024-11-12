@@ -1,15 +1,16 @@
 import { StackScreenProps } from '@react-navigation/stack'
 import { RootStackParams } from '../../navigation/StackNavigator'
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { getProductById } from '../../../actions/products/get-product-by-id';
 import { MainLayout } from '../../layouts/MainLayout';
 import { Button, ButtonGroup, Input, Layout, Text, useTheme } from '@ui-kitten/components';
 import { useRef } from 'react';
 import { FlatList, ScrollView } from 'react-native';
 import { FadeInImage } from '../../components/ui/FadeInImage';
-import { Gender, Size } from '../../../domain/entities/product';
+import { Gender, Product, Size } from '../../../domain/entities/product';
 import { MyIcon } from '../../components/ui/MyIcon';
 import { Formik } from 'formik';
+import { updateCreateProduct } from '../../../actions/products/update-create-product';
 
 const sizes: Size[] = [Size.Xs, Size.S, Size.M, Size.L, Size.Xl, Size.Xxl];
 const genders: Gender[] = [Gender.Kid, Gender.Men, Gender.Women, Gender.Unisex]
@@ -29,6 +30,12 @@ export const ProductScreen = ({ route }: Props) => {
   });
 
   // useMutation, para hacer la actualizacion del producto
+  const mutation = useMutation({
+    mutationFn: (data: Product) => updateCreateProduct({ ...data, id: productIdRef.current }),
+    onSuccess: (data: Product) => {
+      console.log('success');
+    }
+  })
 
   // si aun no encuentra producto mostrara el titulo de cargando
   if (!product) {
@@ -38,7 +45,7 @@ export const ProductScreen = ({ route }: Props) => {
   return (
     <Formik
       initialValues={product}
-      onSubmit={(values: any) => console.log(values)}
+      onSubmit={(values: any) => mutation.mutate(values)}
     >
       {
         ({ handleChange, handleSubmit, values, errors, setFieldValue }) => (
@@ -159,7 +166,7 @@ export const ProductScreen = ({ route }: Props) => {
               {/* boton de guardar */}
               <Button
                 accessoryLeft={<MyIcon name="save-outline" white />}
-                onPress={() => console.log('guardar')}
+                onPress={() => handleSubmit()}
                 style={{ margin: 15 }}
               >
                 Guardar
