@@ -7,15 +7,15 @@ export const updateCreateProduct = (product: Partial<Product>) => {
   product.stock = Number(product.stock);
   product.price = Number(product.price);
 
-  if (product.id) {
+  if (product.id  && product.id !== 'new') {
     return updateProduct(product);
   }
 
-  throw new Error('Creacion aun no esta implementada');
+  return createProduct(product)
+
 }
 
 const updateProduct = async (product: Partial<Product>) => {
-  console.log({ product });
   
   const { id, images = [], ...rest } = product;
 
@@ -32,6 +32,31 @@ const updateProduct = async (product: Partial<Product>) => {
       console.log(error.response?.data)
     }
     throw new Error('Error al actualizar el producto')
+  }
+}
+
+const createProduct = async(product: Partial<Product>) => {
+
+  const { id, images = [], ...rest  } = product;
+
+  try {
+    const checkedImages = prepareImages(images);
+  
+    const { data } = await tesloApi.post(`/products/`, {
+      images: checkedImages,
+      ...rest
+    });
+
+    return data;
+    
+  } catch (error) {
+
+    if ( isAxiosError(error) ) {
+      console.log(error.response?.data);
+    }
+    
+    throw new Error('Error al actualizar el producto');
+
   }
 }
 
