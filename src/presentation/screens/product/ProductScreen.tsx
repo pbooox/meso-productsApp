@@ -1,6 +1,6 @@
 import { StackScreenProps } from '@react-navigation/stack'
 import { RootStackParams } from '../../navigation/StackNavigator'
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { getProductById } from '../../../actions/products/get-product-by-id';
 import { MainLayout } from '../../layouts/MainLayout';
 import { Button, ButtonGroup, Input, Layout, Text, useTheme } from '@ui-kitten/components';
@@ -22,6 +22,7 @@ export const ProductScreen = ({ route }: Props) => {
 
   const productIdRef = useRef(route.params.productId);
   const theme = useTheme();
+  const queryClient = useQueryClient()
 
   // useQuery
   const { data: product } = useQuery({
@@ -33,7 +34,15 @@ export const ProductScreen = ({ route }: Props) => {
   const mutation = useMutation({
     mutationFn: (data: Product) => updateCreateProduct({ ...data, id: productIdRef.current }),
     onSuccess: (data: Product) => {
-      console.log('success');
+      productIdRef.current = data.id;
+
+      // invalidamos la query de productos infinitos (pagina home)
+      // para que cuando regresemos a la pagina se vuelva a hacer la peticion 
+      // y tengamos nueva informacion
+      queryClient.invalidateQueries({ queryKey: ['products', 'infinite'] });
+      // al igual que con la query de esta pantalla
+      // la invalidamos para que vuelva a pedir la informacion nuevamente
+      queryClient.invalidateQueries({ queryKey: ['products', data.id] });
     }
   })
 
