@@ -4,8 +4,13 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { MainLayout } from "../../layouts/MainLayout";
 import { FullScreenLoader } from "../../components/ui/FullScreenLoader";
 import { ProductList } from "../../components/products/ProductList";
+import { FAB } from "../../components/ui/FAB";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
+import { RootStackParams } from "../../navigation/StackNavigator";
 
 export const HomeScreen = () => {
+
+  const navigation = useNavigation<NavigationProp<RootStackParams>>();
 
   const { logout } = useAuthStore();
 
@@ -34,20 +39,33 @@ export const HomeScreen = () => {
   })
 
   return (
-    <MainLayout
-      title="TesloShop - productos"
-      subTitle="Aplicación administrativa"
-    >
-      {
-        isLoading
-          ? (<FullScreenLoader />)
-          : (
-            <ProductList
-              products={data?.pages.flat() ?? []}
-              fetchNextPage={fetchNextPage}
-            />
-          )
-      }
-    </MainLayout>
+    <>
+      <MainLayout
+        title="TesloShop - productos"
+        subTitle="Aplicación administrativa"
+      >
+        {
+          isLoading
+            ? (<FullScreenLoader />)
+            : (
+              <ProductList
+                products={data?.pages.flat() ?? []}
+                fetchNextPage={fetchNextPage}
+              />
+            )
+        }
+      </MainLayout>
+
+      <FAB
+        iconName="plus-outline"
+        onPress={() => { navigation.navigate('ProductScreen', { productId: 'new' }) }}
+        style={{
+          position: 'absolute',
+          bottom: 30,
+          right: 20
+        }}
+      />
+    </>
+
   )
 }
